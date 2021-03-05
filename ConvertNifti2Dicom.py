@@ -17,7 +17,11 @@ for root, folder, files in os.walk(path):
         resampled_image = sitk.ReadImage(os.path.join(root, 'T2.nii.gz'))
         prediction = sitk.ReadImage(os.path.join(root, 'T2_gtvp.nii.gz'))
         xxx = 1
-
+resampled_image = sitk.GetArrayFromImage(resampled_image)
+resampled_image -= np.min(resampled_image)
+resampled_image /= np.max(resampled_image)
+resampled_image *= 255
+resampled_image = sitk.GetImageFromArray(resampled_image)
 reader.get_images()
 series_reader = reader.reader
 
@@ -86,4 +90,4 @@ for i in range(resampled_image.GetDepth()):
 
     # Write to the output directory and add the extension dcm, to force writing in DICOM format.
     writer.SetFileName(os.path.join(out_path, str(i)+'.dcm'))
-    writer.Execute(sitk.Cast(image_slice, sitk.sitkUInt16))
+    writer.Execute(sitk.Cast(image_slice, sitk.sitkInt16))
